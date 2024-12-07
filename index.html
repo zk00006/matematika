@@ -46,7 +46,11 @@
         }
         .score {
             font-size: 1.5rem;
-            margin-top: 40px;
+            margin-top: 20px;
+        }
+        .timer {
+            font-size: 1.5rem;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -58,6 +62,9 @@
     <div class="score">
         Správně: <span id="correct-count">0</span> | Špatně: <span id="incorrect-count">0</span>
     </div>
+    <div class="timer">
+        Čas hry: <span id="time-elapsed">0</span> sekund
+    </div>
 
     <audio id="correct-sound" src="ok.wav"></audio>
     <audio id="incorrect-sound" src="ko.wav"></audio>
@@ -65,6 +72,8 @@
     <script>
         let correctCount = 0;
         let incorrectCount = 0;
+        let timeElapsed = 0;
+        let timerInterval;
 
         function getRandomInt(min, max) {
             return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -80,7 +89,6 @@
                 question = `Kolik je ${num1} + ${num2}?`;
                 answer = num1 + num2;
             } else {
-                // Ensure the result is non-negative
                 const [larger, smaller] = num1 >= num2 ? [num1, num2] : [num2, num1];
                 question = `Kolik je ${larger} - ${smaller}?`;
                 answer = larger - smaller;
@@ -104,11 +112,11 @@
             const incorrectSound = document.getElementById("incorrect-sound");
 
             if (userAnswer === currentQuestion.answer) {
-                emojiDiv.innerText = "🐉"; // 🔥🐲🦖
+                emojiDiv.innerText = "🐉🔥";
                 correctSound.play();
                 correctCount++;
             } else {
-                emojiDiv.innerText = "😢"; // 💩🤷
+                emojiDiv.innerText = "😢";
                 incorrectSound.play();
                 incorrectCount++;
             }
@@ -120,6 +128,13 @@
             setTimeout(displayQuestion, 2000);
         }
 
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeElapsed++;
+                document.getElementById("time-elapsed").innerText = timeElapsed;
+            }, 1000);
+        }
+
         document.getElementById("answer").addEventListener("keypress", function(event) {
             if (event.key === "Enter") {
                 event.preventDefault();
@@ -128,6 +143,7 @@
         });
 
         displayQuestion();
+        startTimer();
     </script>
 </body>
 </html>
