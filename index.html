@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matematická hra</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+        }
+        h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        input {
+            font-size: 2rem;
+            padding: 20px;
+            width: 200px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        button {
+            font-size: 2rem;
+            margin-top: 20px;
+            padding: 15px 30px;
+            background-color: #4e4caf;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #ff0000;
+        }
+        .emoji {
+            font-size: 5rem;
+            margin-top: 40px;
+        }
+        .score {
+            font-size: 1.5rem;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="question">Kolik je 1 + 1?</h1>
+    <input type="number" id="answer" placeholder="">
+    <button id="submit-btn" onclick="checkAnswer()">Zkontrolovat</button>
+    <div id="emoji" class="emoji"></div>
+    <div class="score">
+        Správně: <span id="correct-count">0</span> | Špatně: <span id="incorrect-count">0</span>
+    </div>
+
+    <audio id="correct-sound" src="ok.wav"></audio>
+    <audio id="incorrect-sound" src="ko.wav"></audio>
+
+    <script>
+        let correctCount = 0;
+        let incorrectCount = 0;
+
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function generateQuestion() {
+            const num1 = getRandomInt(0, 5);
+            const num2 = getRandomInt(0, 5);
+            const operator = Math.random() < 0.5 ? '+' : '-';
+            let question, answer;
+
+            if (operator === '+') {
+                question = `Kolik je ${num1} + ${num2}?`;
+                answer = num1 + num2;
+            } else {
+                // Ensure the result is non-negative
+                // const [larger, smaller] = num1 >= num2 ? [num1, num2] : [num2, num1];
+                question = `Kolik je ${num1} - ${num2}?`;
+                answer = num1 - num2;
+            }
+
+            return { question, answer };
+        }
+
+        let currentQuestion = generateQuestion();
+
+        function displayQuestion() {
+            document.getElementById("question").innerText = currentQuestion.question;
+            document.getElementById("answer").value = "";
+            document.getElementById("emoji").innerText = "";
+        }
+
+        function checkAnswer() {
+            const userAnswer = parseInt(document.getElementById("answer").value, 10);
+            const emojiDiv = document.getElementById("emoji");
+            const correctSound = document.getElementById("correct-sound");
+            const incorrectSound = document.getElementById("incorrect-sound");
+
+            if (userAnswer === currentQuestion.answer) {
+                emojiDiv.innerText = "🐉"; // 🔥🐲🦖
+                correctSound.play();
+                correctCount++;
+            } else {
+                emojiDiv.innerText = "💩"; // 😢🤷
+                incorrectSound.play();
+                incorrectCount++;
+            }
+
+            document.getElementById("correct-count").innerText = correctCount;
+            document.getElementById("incorrect-count").innerText = incorrectCount;
+
+            currentQuestion = generateQuestion();
+            setTimeout(displayQuestion, 2000);
+        }
+
+        document.getElementById("answer").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                checkAnswer();
+            }
+        });
+
+        displayQuestion();
+    </script>
+</body>
+</html>
