@@ -81,9 +81,9 @@
                 answer = num1 + num2;
             } else {
                 // Ensure the result is non-negative
-                // const [larger, smaller] = num1 >= num2 ? [num1, num2] : [num2, num1];
-                question = `Kolik je ${num1} - ${num2}?`;
-                answer = num1 - num2;
+                const [larger, smaller] = num1 >= num2 ? [num1, num2] : [num2, num1];
+                question = `Kolik je ${larger} - ${smaller}?`;
+                answer = larger - smaller;
             }
 
             return { question, answer };
@@ -108,7 +108,7 @@
                 correctSound.play();
                 correctCount++;
             } else {
-                emojiDiv.innerText = "💩"; // 😢🤷
+                emojiDiv.innerText = "😢"; // 💩🤷
                 incorrectSound.play();
                 incorrectCount++;
             }
