@@ -81,8 +81,8 @@
         }
 
         function generateQuestion() {
-            const num1 = getRandomInt(0, 5);
-            const num2 = getRandomInt(0, 5);
+            const num1 = getRandomInt(0, 7);
+            const num2 = getRandomInt(0, 7);
             const operator = Math.random() < 0.5 ? '+' : '-';
             let question, answer;
 
@@ -90,6 +90,7 @@
                 question = `Kolik je ${num1} + ${num2}?`;
                 answer = num1 + num2;
             } else {
+                
                 const [larger, smaller] = num1 >= num2 ? [num1, num2] : [num2, num1];
                 question = `Kolik je ${larger} - ${smaller}?`;
                 answer = larger - smaller;
@@ -117,7 +118,7 @@
                 correctSound.play();
                 correctCount++;
             } else {
-                emojiDiv.innerText = "😢";
+                emojiDiv.innerText = "💩😢";
                 incorrectSound.play();
                 incorrectCount++;
             }
