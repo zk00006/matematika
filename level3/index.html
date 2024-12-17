@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matematická hra s číselnou osou</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+        }
+        h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        input {
+            font-size: 2rem;
+            padding: 20px;
+            width: 200px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        button {
+            font-size: 2rem;
+            margin-top: 20px;
+            padding: 15px 30px;
+            background-color: #4e4caf;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #ff0000;
+        }
+        .emoji {
+            font-size: 5rem;
+            margin-top: 40px;
+        }
+        .score, .timer {
+            font-size: 1.5rem;
+            margin-top: 10px;
+        }
+        #svgContainer {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="question">Kolik je 1 + 1?</h1>
+    <input type="number" id="answer" placeholder="">
+    <button id="submit-btn" onclick="checkAnswer()">Zkontrolovat</button>
+    <div id="emoji" class="emoji"></div>
+    <div class="score">
+        Správně: <span id="correct-count">0</span> | Špatně: <span id="incorrect-count">0</span>
+    </div>
+    <div class="timer">
+        Čas hry: <span id="time-elapsed">0</span> sekund
+    </div>
+    <div id="svgContainer"></div>
+
+    <audio id="correct-sound" src="ok.wav"></audio>
+    <audio id="incorrect-sound" src="ko.wav"></audio>
+
+    <script>
+        let correctCount = 0;
+        let incorrectCount = 0;
+        let timeElapsed = 0;
+        let timerInterval;
+
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function generateQuestion() {
+            const num1 = getRandomInt(0, 5);
+            const num2 = getRandomInt(0, 5);
+            const operator = Math.random() < 0.5 ? '+' : '-';
+            let question, answer;
+
+            if (operator === '+') {
+                question = `Kolik je ${num1} + ${num2}?`;
+                answer = num1 + num2;
+            } else {
+                const [larger, smaller] = num1 >= num2 ? [num1, num2] : [num2, num1];
+                question = `Kolik je ${larger} - ${smaller}?`;
+                answer = larger - smaller;
+            }
+
+            return { question, answer, num1, num2, operator };
+        }
+
+        let currentQuestion = generateQuestion();
+
+        function displayQuestion() {
+            document.getElementById("question").innerText = currentQuestion.question;
+            document.getElementById("answer").value = "";
+            document.getElementById("emoji").innerText = "";
+            document.getElementById("svgContainer").innerHTML = "";
+        }
+
+        function checkAnswer() {
+            const userAnswer = parseInt(document.getElementById("answer").value, 10);
+            const emojiDiv = document.getElementById("emoji");
+            const correctSound = document.getElementById("correct-sound");
+            const incorrectSound = document.getElementById("incorrect-sound");
+
+            if (userAnswer === currentQuestion.answer) {
+                emojiDiv.innerText = "🐉🔥";
+                correctSound.play();
+                correctCount++;
+                generateNumberLine();
+            } else {
+                emojiDiv.innerText = "😢";
+                incorrectSound.play();
+                incorrectCount++;
+            }
+
+            document.getElementById("correct-count").innerText = correctCount;
+            document.getElementById("incorrect-count").innerText = incorrectCount;
+
+            currentQuestion = generateQuestion();
+            setTimeout(displayQuestion, 2000);
+        }
+
+        function generateNumberLine() {
+            const start = currentQuestion.num1;
+            const step = currentQuestion.operator === '+' ? currentQuestion.num2 : -currentQuestion.num2;
+            const end = currentQuestion.answer;
+
+            const svg = `
+                <svg width="600" height="150" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Číselná osa -->
+                    <line x1="50" y1="100" x2="550" y2="100" stroke="black" stroke-width="2"/>
+                    ${generateTicks()}
+
+                    <!-- První šipka: od 0 do startu -->
+                    <path d="M 50 100 Q ${(start * 50 + 50) / 2} 50 ${start * 50 + 50} 100" 
+                          stroke="orange" stroke-width="2" fill="none" marker-end="url(#sipka)"/>
+
+                    <!-- Druhá šipka: od startu do konce -->
+                    <path d="M ${start * 50 + 50} 100 Q ${(start + step / 2) * 50 + 50} 50 ${end * 50 + 50} 100" 
+                          stroke="blue" stroke-width="2" fill="none" marker-end="url(#sipka)"/>
+
+                    <!-- Body -->
+                    <circle cx="50" cy="100" r="5" fill="black" /> <!-- Začátek na 0 -->
+                    <circle cx="${start * 50 + 50}" cy="100" r="5" fill="red" />
+                    <circle cx="${end * 50 + 50}" cy="100" r="5" fill="green" />
+
+                    <!-- Šipka -->
+                    <defs>
+                        <marker id="sipka" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="black"/>
+                        </marker>
+                    </defs>
+                </svg>
+            `;
+            document.getElementById("svgContainer").innerHTML = svg;
+        }
+
+        function generateTicks() {
+            let ticks = "";
+            for (let i = 0; i <= 10; i++) {
+                const x = i * 50 + 50;
+                ticks += `<line x1="${x}" y1="95" x2="${x}" y2="105" stroke="black"/>
+                          <text x="${x}" y="120" text-anchor="middle">${i}</text>`;
+            }
+            return ticks;
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeElapsed++;
+                document.getElementById("time-elapsed").innerText = timeElapsed;
+            }, 1000);
+        }
+
+        document.getElementById("answer").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                checkAnswer();
+            }
+        });
+
+        displayQuestion();
+        startTimer();
+    </script>
+</body>
+</html>
