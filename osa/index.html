@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vizualizace číselné osy</title>
+</head>
+<body>
+    <h1>Vizualizace číselné osy</h1>
+    <p>Zadejte rovnici, například <b>4+1=5</b> nebo <b>5-1=4</b>:</p>
+    <form id="formularRovnice">
+        <input type="text" id="vstupRovnice" placeholder="např. 4+1=5" required>
+        <button type="submit">Generovat</button>
+    </form>
+
+    <h2>Vizualizace:</h2>
+    <div id="svgContainer"></div>
+
+    <script>
+        document.getElementById("formularRovnice").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const vstup = document.getElementById("vstupRovnice").value;
+
+            // Zpracování rovnic se znaménkem + nebo -
+            const match = vstup.match(/(-?\d+)\s*([\+\-])\s*(-?\d+)\s*=\s*(-?\d+)/);
+            if (!match) {
+                zobrazChybu();
+                return;
+            }
+
+            const start = parseInt(match[1]);
+            const operator = match[2];
+            const krok = parseInt(match[3]);
+            const konec = parseInt(match[4]);
+
+            // Ověření správnosti rovnice
+            const vypocet = operator === '+' ? start + krok : start - krok;
+            if (vypocet !== konec) {
+                zobrazChybu();
+                return;
+            }
+
+            // Generování SVG
+            const svg = `
+                <svg width="600" height="150" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Číselná osa -->
+                    <line x1="50" y1="100" x2="550" y2="100" stroke="black" stroke-width="2"/>
+
+                    <!-- Čárky a čísla -->
+                    ${generujCarky(start, konec)}
+
+                    <!-- Křivka od 0 do počátečního bodu -->
+                    <path d="M 50 100 Q ${(start * 50) / 2} 40 ${start * 50 + 50} 100" stroke="orange" stroke-width="2" fill="none" marker-end="url(#sipka)"/>
+
+                    <!-- Křivka od počátečního bodu do koncového -->
+                    <path d="M ${start * 50 + 50} 100 Q ${(start + krok / 2) * 50 + 50} 60 ${konec * 50 + 50} 100" 
+                          stroke="blue" stroke-width="2" fill="none" marker-end="url(#sipka)"/>
+
+                    <!-- Počáteční a koncové body -->
+                    <circle cx="${start * 50 + 50}" cy="100" r="5" fill="red" />
+                    <circle cx="${konec * 50 + 50}" cy="100" r="5" fill="green" />
+
+                    <!-- Šipka -->
+                    <defs>
+                        <marker id="sipka" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="blue"/>
+                        </marker>
+                    </defs>
+                </svg>
+            `;
+
+            document.getElementById("svgContainer").innerHTML = svg;
+        });
+
+        function generujCarky(start, konec) {
+            let carky = "";
+            const max = Math.max(Math.abs(konec) + 2, 6);
+            for (let i = -max; i <= max; i++) {
+                const x = i * 50 + 50;
+                carky += `
+                    <line x1="${x}" y1="95" x2="${x}" y2="105" stroke="black"/>
+                    <text x="${x}" y="120" text-anchor="middle">${i}</text>
+                `;
+            }
+            return carky;
+        }
+
+        function zobrazChybu() {
+            const svgChyba = `
+                <svg width="600" height="150" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Zpráva o chybě -->
+                    <text x="300" y="75" font-size="24" text-anchor="middle" fill="red" font-family="Arial">
+                        špatná odpověď
+                    </text>
+                </svg>
+            `;
+            document.getElementById("svgContainer").innerHTML = svgChyba;
+        }
+    </script>
+</body>
+</html>
