@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="cs">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,11 +16,13 @@
             font-family: Arial, sans-serif;
             background-color: #f0f8ff;
         }
+
         h1 {
             font-size: 3rem;
             font-weight: bold;
             margin-bottom: 20px;
         }
+
         input {
             font-size: 2rem;
             padding: 20px;
@@ -27,6 +30,7 @@
             text-align: center;
             margin-top: 20px;
         }
+
         button {
             font-size: 2rem;
             margin-top: 20px;
@@ -37,33 +41,57 @@
             border-radius: 10px;
             cursor: pointer;
         }
+
         button:hover {
             background-color: #ff0000;
         }
+
         .emoji {
             font-size: 5rem;
             margin-top: 40px;
         }
-        .score, .timer {
+
+        .score,
+        .timer {
             font-size: 1.5rem;
             margin-top: 10px;
         }
+
         #svgContainer {
             margin-top: 30px;
         }
+
+        #answer {
+            width: 100px;
+            margin-left: 10px;
+
+        }
+
+
+        .container {
+            display: flex;
+            align-items: center;
+        }
     </style>
 </head>
+
 <body>
-    <h1 id="question">Kolik je 1 + 1?</h1>
-    <div id="svgContainer"></div> 
-    <input type="number" id="answer" placeholder="">
-    <button id="submit-btn" onclick="checkAnswer()">Zkontrolovat</button>
     <div id="emoji" class="emoji"></div>
+    <div id="svgContainer"></div>
+
+    <div class="container">
+        <h1 id="question">1 + 1 = </h1>
+        <input id="answer" placeholder="" width="100px">
+    </div>
+
+    <button id="submit-btn" onclick="checkAnswer()">Zkontrolovat</button>
+  
+    <br><br><br>
     <div class="score">
-        Správně: <span id="correct-count">0</span> | Špatně: <span id="incorrect-count">0</span>
+        právně: <span id="correct-count">0</span> | Špatně: <span id="incorrect-count">0</span>
     </div>
     <div class="timer">
-        Čas hry: <span id="time-elapsed">0</span> sekund
+        Čas hry: <span id="time-elapsed">0</span> sekund 
     </div>
 
     <audio id="correct-sound" src="ok.wav"></audio>
@@ -86,10 +114,10 @@
             let question, answer;
 
             if (operator === '+') {
-                question = `Kolik je ${num1} + ${num2}?`;
+                question = `${num1} + ${num2} = `;
                 answer = num1 + num2;
             } else {
-                question = `Kolik je ${num1} - ${num2}?`;
+                question = `${num1} - ${num2} = `;
                 answer = num1 - num2;
             }
 
@@ -100,11 +128,11 @@
 
         function displayQuestion() {
             document.getElementById("question").innerText = currentQuestion.question;
-
             document.getElementById("answer").value = "";
-            document.getElementById("emoji").innerText = "";
+            document.getElementById("emoji").innerText = "🤔";
             document.getElementById("svgContainer").innerHTML = "";
             
+
         }
 
         function checkAnswer() {
@@ -112,15 +140,15 @@
             const emojiDiv = document.getElementById("emoji");
             const correctSound = document.getElementById("correct-sound");
             const incorrectSound = document.getElementById("incorrect-sound");
-        
+
             if (userAnswer === currentQuestion.answer) {
-                emojiDiv.innerText = "🐉🔥";
+                emojiDiv.innerText = "👍";
                 correctSound.play();
                 correctCount++;
                 generateNumberLine();
-                
+
             } else {
-                emojiDiv.innerText = "😢";
+                emojiDiv.innerText = "👎";
                 incorrectSound.play();
                 incorrectCount++;
             }
@@ -129,7 +157,7 @@
             document.getElementById("incorrect-count").innerText = incorrectCount;
 
             currentQuestion = generateQuestion();
-            setTimeout(displayQuestion, 2000);
+            setTimeout(displayQuestion, 4000);
         }
 
         function generateNumberLine() {
@@ -184,7 +212,7 @@
             }, 1000);
         }
 
-        document.getElementById("answer").addEventListener("keypress", function(event) {
+        document.getElementById("answer").addEventListener("keypress", function (event) {
             if (event.key === "Enter") {
                 event.preventDefault();
                 checkAnswer();
@@ -195,4 +223,5 @@
         startTimer();
     </script>
 </body>
+
 </html>
