@@ -31,34 +31,14 @@
             margin-top: 20px;
         }
 
-        button {
-            font-size: 2rem;
-            margin-top: 20px;
-            padding: 15px 30px;
-            background-color: #4e4caf;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #ff0000;
-        }
-
         .emoji {
-            font-size: 5rem;
+            font-size: 150px;
             margin-top: 40px;
         }
 
-        .score,
-        .timer {
-            font-size: 1.5rem;
-            margin-top: 10px;
-        }
-
-        #svgContainer {
-            margin-top: 30px;
+        .score  {
+            font-size: 20px;
+            margin-top: 150px;
         }
 
         #answer {
@@ -66,11 +46,17 @@
             margin-left: 10px;
 
         }
+        #num1 {
+            color: orange
+        }
+        #num2 {
+            color:blue
+        }
 
-
-        .container {
+        .questionContainer {
             display: flex;
             align-items: center;
+            gap: 10px
         }
     </style>
 </head>
@@ -79,25 +65,25 @@
     <div id="emoji" class="emoji"></div>
     <div id="svgContainer"></div>
 
-    <div class="container">
-        <h1 id="question">1 + 1 = </h1>
+    <div class="questionContainer">
+        <h1 id="num1">1</h1>
+        <h1 id="operator">+</h1>
+        <h1 id="num2">1</h1>
+        <h1>=</h1>
         <input id="answer" placeholder="" width="100px">
     </div>
 
-    <button id="submit-btn" onclick="checkAnswer()">Zkontrolovat</button>
-  
-    <br><br><br>
     <div class="score">
-        právně: <span id="correct-count">0</span> | Špatně: <span id="incorrect-count">0</span>
-    </div>
-    <div class="timer">
-        Čas hry: <span id="time-elapsed">0</span> sekund 
+        Dobře <span id="correct-count">0</span> | 
+        Špatně <span id="incorrect-count">0</span>
+        <!-- Čas <span id="time-elapsed">0</span> s  -->
     </div>
 
     <audio id="correct-sound" src="ok.wav"></audio>
     <audio id="incorrect-sound" src="ko.wav"></audio>
 
     <script>
+
         let correctCount = 0;
         let incorrectCount = 0;
         let timeElapsed = 0;
@@ -111,28 +97,26 @@
             let num1 = getRandomInt(0, 4);
             let num2 = getRandomInt(0, 4);
             const operator = Math.random() < 0.5 ? '+' : '-';
-            let question, answer;
-
+            let answer;
             if (operator === '+') {
-                question = `${num1} + ${num2} = `;
                 answer = num1 + num2;
             } else {
-                question = `${num1} - ${num2} = `;
                 answer = num1 - num2;
             }
 
-            return { question, answer, num1, num2, operator };
+            return { num1, operator, num2, answer };
         }
 
         let currentQuestion = generateQuestion();
 
         function displayQuestion() {
-            document.getElementById("question").innerText = currentQuestion.question;
-            document.getElementById("answer").value = "";
             document.getElementById("emoji").innerText = "🤔";
-            document.getElementById("svgContainer").innerHTML = "";
-            
-
+            document.getElementById("num1").innerText = currentQuestion.num1;
+            document.getElementById("num2").innerText = currentQuestion.num2;
+            document.getElementById("operator").innerText = currentQuestion.operator;
+            document.getElementById("answer").value = "";
+            drawEmptyAxis();
+            // document.getElementById("svgContainer").innerHTML = "";
         }
 
         function checkAnswer() {
@@ -145,7 +129,7 @@
                 emojiDiv.innerText = "👍";
                 correctSound.play();
                 correctCount++;
-                generateNumberLine();
+                drawAxis();
 
             } else {
                 emojiDiv.innerText = "👎";
@@ -156,11 +140,11 @@
             document.getElementById("correct-count").innerText = correctCount;
             document.getElementById("incorrect-count").innerText = incorrectCount;
 
-            currentQuestion = generateQuestion();
             setTimeout(displayQuestion, 4000);
+            currentQuestion = generateQuestion();
         }
 
-        function generateNumberLine() {
+        function drawAxis() {
             const start = currentQuestion.num1;
             const step = currentQuestion.operator === '+' ? currentQuestion.num2 : -currentQuestion.num2;
             const end = currentQuestion.answer;
@@ -190,6 +174,14 @@
                             <polygon points="0 0, 10 3.5, 0 7" fill="black"/>
                         </marker>
                     </defs>
+                </svg>
+            `;
+            document.getElementById("svgContainer").innerHTML = svg;
+        }
+
+        function drawEmptyAxis() {
+            const svg = `
+                <svg width="600" height="150" xmlns="http://www.w3.org/2000/svg">
                 </svg>
             `;
             document.getElementById("svgContainer").innerHTML = svg;
