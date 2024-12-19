@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>True or False Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f9;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+        }
+        .question {
+            font-size: 24px;
+            margin: 20px 0;
+        }
+        .button {
+            font-size: 18px;
+            margin: 10px;
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+        .correct {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .incorrect {
+            background-color: #f44336;
+            color: white;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 20px;
+        }
+        .score {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="question" id="question">Létají ptáci?</div>
+        <button class="button" onclick="answer('A')">A - Ano</button>
+        <button class="button" onclick="answer('N')">N - Ne</button>
+        <div class="result" id="result"></div>
+        <div class="score" id="score">Skóre: 0</div>
+    </div>
+
+    <script>
+       const questions = [
+    { question: 'Umí ryba dýchat na souši?', answer: 'N' },
+    { question: 'Má pes ocas?', answer: 'A' },
+    { question: 'Létají včely?', answer: 'A' },
+    { question: 'Má žirafa dlouhý krk?', answer: 'A' },
+    { question: 'Může kočka plavat?', answer: 'N' },
+    { question: 'Slon je větší než lev?', answer: 'A' },
+    { question: 'Zebra má pruhy?', answer: 'A' },
+    { question: 'Ptáci mají zuby?', answer: 'N' },
+    { question: 'Má medvěd chlupy?', answer: 'A' },
+    { question: 'Může auto létat?', answer: 'N' },
+    { question: 'Může pes štěkat?', answer: 'A' },
+    { question: 'Může auto plavat?', answer: 'N' },
+    { question: 'Roste tráva na poušti?', answer: 'N' },
+    { question: 'Může koala žít na stromě?', answer: 'A' },
+    { question: 'Může kráva běžet rychle?', answer: 'N' },
+    { question: 'Má kůň hřívu?', answer: 'A' },
+    { question: 'Lidé mají tři oči?', answer: 'N' },
+    { question: 'Má koala kapsu?', answer: 'A' },
+    { question: 'Roste mrkev pod zemí?', answer: 'A' },
+    { question: 'Hory jsou vyšší než moře?', answer: 'A' },
+    { question: 'Může ryba dýchat pod vodou?', answer: 'A' },
+    { question: 'Má kočka ocasy?', answer: 'A' },
+    { question: 'Je slunce studené?', answer: 'N' },
+    { question: 'Je měsíc větší než Země?', answer: 'N' },
+    { question: 'Roste jablko na keři?', answer: 'N' },
+    { question: 'Létají ptáci?', answer: 'A' },
+    { question: 'Může člověk dýchat pod vodou bez dýchacího přístroje?', answer: 'N' },
+    { question: 'Lidé mají pět prstů na rukou?', answer: 'A' },
+    { question: 'Může auto chodit?', answer: 'N' },
+    { question: 'Roste tráva na stromech?', answer: 'N' },
+    { question: 'Mají hadi nohy?', answer: 'N' },
+    { question: 'Může pes běžet rychle?', answer: 'A' },
+    { question: 'Může člověk létat?', answer: 'N' },
+    { question: 'Roste písek na stromech?', answer: 'N' },
+    { question: 'Má krokodýl zuby?', answer: 'A' },
+    { question: 'Je oceán modrý?', answer: 'A' },
+    { question: 'Může želva běžet rychle?', answer: 'N' },
+    { question: 'Má slon chobot?', answer: 'A' },
+    { question: 'Může auto běžet?', answer: 'N' },
+    { question: 'Lidé mají kožní chloupky?', answer: 'A' },
+    { question: 'Může medvěd mluvit?', answer: 'N' },
+    { question: 'Může člověk spát pod vodou?', answer: 'N' },
+    { question: 'Může krtek běžet?', answer: 'N' },
+    { question: 'Má pes čtyři nohy?', answer: 'A' },
+    { question: 'Může kočka chodit po stromech?', answer: 'A' },
+    { question: 'Létají komáři?', answer: 'A' },
+    { question: 'Může pes mluvit?', answer: 'N' },
+    { question: 'Má krokodýl nohy?', answer: 'A' },
+    { question: 'Je oceán větší než moře?', answer: 'A' },
+    { question: 'Roste jablko na stromě?', answer: 'A' },
+    { question: 'Může kočka běžet rychle?', answer: 'A' },
+    { question: 'Lidé mají schopnost plavat?', answer: 'A' },
+    { question: 'Roste písek na pláži?', answer: 'A' },
+    { question: 'Může pes jíst ovoce?', answer: 'A' },
+    { question: 'Může auto být pod vodou?', answer: 'N' },
+    { question: 'Může ryba létat?', answer: 'N' },
+    { question: 'Je měsíc studený?', answer: 'A' },
+    { question: 'Může hroch běžet rychle?', answer: 'N' },
+    { question: 'Může žirafa lézt na stromy?', answer: 'N' },
+    { question: 'Může pes jíst čokoládu?', answer: 'N' },
+    { question: 'Může slon žít v lese?', answer: 'A' },
+    { question: 'Může koala jíst eukalyptové listy?', answer: 'A' },
+    { question: 'Lidé mají dvě oči?', answer: 'A' },
+    { question: 'Je měsíc vzdálený od Země?', answer: 'A' },
+    { question: 'Může kráva skákat?', answer: 'N' },
+    { question: 'Může pes štěkat na kočku?', answer: 'A' },
+    { question: 'Může včela zpívat?', answer: 'N' },
+    { question: 'Může hroch létat?', answer: 'N' },
+    { question: 'Může kráva plavat?', answer: 'N' },
+    { question: 'Může žába skákat?', answer: 'A' },
+    { question: 'Může kočka spát v posteli?', answer: 'A' },
+    { question: 'Má krokodýl ocas?', answer: 'A' },
+    { question: 'Může delfín zpívat?', answer: 'N' },
+    { question: 'Roste jablko v lese?', answer: 'N' },
+    { question: 'Může pes skákat?', answer: 'A' },
+    { question: 'Může kočka jíst maso?', answer: 'A' },
+    { question: 'Může lev běžet rychle?', answer: 'A' },
+    { question: 'Může ryba dýchat vzduch?', answer: 'N' },
+    { question: 'Má hroch velké uši?', answer: 'A' },
+    { question: 'Může slon tančit?', answer: 'N' },
+    { question: 'Může pes mít kožní nemoc?', answer: 'A' },
+    { question: 'Může kočka mít kožní nemoc?', answer: 'A' },
+    { question: 'Může delfín dýchat na souši?', answer: 'N' },
+    { question: 'Má kočka drápy?', answer: 'A' },
+    { question: 'Může pes lovit?', answer: 'A' },
+    { question: 'Může koala mluvit?', answer: 'N' },
+    { question: 'Roste tráva v zahradě?', answer: 'A' },
+    { question: 'Může kočka jíst čokoládu?', answer: 'N' },
+    { question: 'Může pes být přítel člověka?', answer: 'A' },
+    { question: 'Je pes známý pro svou loajalitu?', answer: 'A' },
+    { question: 'Je člověk největší tvor na Zemi?', answer: 'N' },
+    { question: 'Může včela létat za slunečního svitu?', answer: 'A' },
+    { question: 'Může králík jíst mrkev?', answer: 'A' },
+    { question: 'Může auto jet na vodu?', answer: 'N' },
+    { question: 'Má kachna plovací nohy?', answer: 'A' },
+    { question: 'Může kočka běžet rychleji než pes?', answer: 'N' },
+    { question: 'Může pes sníst kočku?', answer: 'N' },
+    { question: 'Může pes plavat v moři?', answer: 'A' },
+    { question: 'Může krab běžet do strany?', answer: 'A' },
+    { question: 'Může člověk mluvit s rybami?', answer: 'N' },
+    { question: 'Může želva spát na stromě?', answer: 'N' },
+    { question: 'Může had skákat?', answer: 'N' },
+    { question: 'Může člověk žít pod vodou?', answer: 'N' },
+    { question: 'Může kočka chytat myši?', answer: 'A' },
+    { question: 'Může pes být rozzuřený?', answer: 'A' },
+    { question: 'Může kachna létat?', answer: 'A' },
+    { question: 'Může kočka mít koťata?', answer: 'A' },
+    { question: 'Může pes mít štěňata?', answer: 'A' },
+    { question: 'Může kočka mít kocoury?', answer: 'A' }
+];
+
+
+        // Ensure there are 100 questions by duplicating and shuffling them
+        const extendedQuestions = [...questions];
+        while (extendedQuestions.length < 100) {
+            extendedQuestions.push(...questions);
+        }
+        // Shuffle the questions to randomize them
+        extendedQuestions.sort(() => Math.random() - 0.5);
+
+        let currentQuestion = 0;
+        let score = 0;
+
+        function loadQuestion() {
+            const questionElement = document.getElementById('question');
+            questionElement.textContent = extendedQuestions[currentQuestion].question;
+            document.getElementById('result').textContent = '';
+        }
+
+        function answer(userAnswer) {
+            const correctAnswer = extendedQuestions[currentQuestion].answer;
+            const resultElement = document.getElementById('result');
+            if (userAnswer === correctAnswer) {
+                resultElement.textContent = 'Správně!';
+                resultElement.className = 'result correct';
+                score++;
+            } else {
+                resultElement.textContent = 'Špatně!';
+                resultElement.className = 'result incorrect';
+            }
+
+            // Update score
+            document.getElementById('score').textContent = `Skóre: ${score}`;
+
+            currentQuestion++;
+            if (currentQuestion < extendedQuestions.length) {
+                setTimeout(loadQuestion, 1000);
+            } else {
+                setTimeout(() => {
+                    resultElement.textContent = `Konec hry! Vaše skóre je: ${score} z ${extendedQuestions.length}`;
+                    resultElement.className = 'result';
+                    document.getElementById('score').style.display = 'none'; // Hide score after the game ends
+                }, 1000);
+            }
+        }
+
+        loadQuestion();
+    </script>
+
+</body>
+</html>
